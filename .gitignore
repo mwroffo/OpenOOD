@@ -151,10 +151,6 @@ dmypy.json
 # check format
 .isort.cfg
 
-# no jupyter notebook
-*.ipynb_checkpoints
-*.ipynb
-
 # ignore custom config and scripts
 config/*/_*/
 scripts/_*/
