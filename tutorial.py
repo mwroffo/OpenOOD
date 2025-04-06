@@ -5,14 +5,22 @@ import torch
 from openood.evaluation_api import Evaluator
 from openood.networks import ResNet18_32x32 # just a wrapper around the ResNet
 
-# load the model
-net = ResNet18_32x32(num_classes=10)
-net.load_state_dict(
-    torch.load('./cifar10_resnet18_32x32_base_e100_lr0.1_default/s0/best.ckpt')
-)
-net.cuda()
-net.eval()
+# Set device
+USE_GPU = True
+if USE_GPU and torch.cuda.is_available():
+    device = torch.device('cuda')
+elif USE_GPU and torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device('cpu')
+print(f"Using device: {device}")
 
+# load the model
+checkpoint_path = 'data/cifar10/cifar10_resnet18_32x32_base_e100_lr0.1_default/s0/best.ckpt'
+net = ResNet18_32x32(num_classes=10)
+net.load_state_dict(torch.load(checkpoint_path, map_location=device))
+net.to(device)
+net.eval()
 
 #@title choose an implemented postprocessor
 postprocessor_name = "react" #@param ["openmax", "msp", "temp_scaling", "odin", "mds", "mds_ensemble", "rmds", "gram", "ebo", "gradnorm", "react", "mls", "klm", "vim", "knn", "dice", "rankfeat", "ash", "she"] {allow-input: true}

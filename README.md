@@ -76,7 +76,12 @@ MWR Install steps
 ```
 # Use python 3.10 via pyenv
 # Using MacOS 11
-# Use venv
+
+# Using pyenv with the virtualenv plugin.
+_mexus@magdalene libMR % pyenv virtualenvs
+  3.10.16/envs/openood-env (created from /Users/_mexus/.pyenv/versions/3.10.16)
+* openood-env (created from /Users/_mexus/.pyenv/versions/3.10.16)
+
 # Use   'faiss-cpu>=1.7.2',
 # To setup.py use
 install_requires=[
@@ -85,7 +90,13 @@ install_requires=[
 python3 -m pip install -e .
 ```
 
-I had to install libmr separately. In another directory, clone the repo and just follow the readme to install it. The pypi install doesn't seem to work.
+I had to install libmr separately. In another directory, clone the repo and 
+
+```
+virtualenv venv && source venv/bin/activate
+$ pip install -r python/requirements.txt
+$ pip install .
+```
 
 #### Data
 If you only use our evaluator, the benchmarks for evaluation will be automatically downloaded by the evaluator (again check out this [tutorial](https://colab.research.google.com/drive/1tvTpCM1_ju82Yygu40fy7Lc0L1YrlkQF?usp=sharing)). If you would like to also use OpenOOD for training, you can get all data with our [downloading script](https://github.com/Jingkang50/OpenOOD/tree/main/scripts/download). Note that ImageNet-1K training images should be downloaded from its official website.

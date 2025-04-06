@@ -16,6 +16,25 @@ ture background representations and take them into ac-
 count when computing class scores, perhaps via cluster-
 ing methods.
 
+# Post Hoc OOD Detection Methods
+
+| Method          | Approach Type             | Key Idea                                                           | Notes                                                               |
+|-----------------|---------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------|
+| **MSP**         | Confidence-based          | Use maximum softmax probability as confidence score                | Simple baseline, but overconfident models struggle with OOD         |
+| **ODIN**        | Confidence-based          | Apply temperature scaling + input perturbation to boost ID/OOD gap | Requires tuning and backpropagation                                 |
+| **MDS**         | Distance-based            | Mahalanobis Distance on layer features to class centroids          | Assumes Gaussian feature distributions                              |
+| **EBO**         | Energy-based              | Use energy (log-sum-exp of logits) as OOD score                    | Better calibrated than softmax                                      |
+| **ReAct**       | Activation regularization | Clip penultimate activations before scoring (e.g., energy)         | Helps reduce OOD overconfidence                                     |
+| **GRAM**        | Activation correlation    | Measure Gram matrix shift of activations compared to training data | Detects distribution shift via spatial correlation                  |
+| **DICE**        | Normalized activations    | Normalize logit vectors and use cosine similarity as score         | Fast, effective for vision models                                   |
+| **GradNorm**    | Gradient-based            | Use gradient norm of loss w.r.t input as an OOD score              | OOD inputs induce larger gradients                                  |
+| **MLS**         | Logit separation          | Maximum of logits (before softmax) as score                        | Like MSP but before softmax                                         |
+| **KL-Matching** | Distributional matching   | Match KL divergence of predictive distribution to reference        | Needs a reference distribution; good for detecting anomalous shifts |
+| **VIM**         | Feature decomposition     | Use principal components and residual norm to score OOD-ness       | Robust to OOD samples deviating from class subspaces                |
+| **KNN**         | Distance-based            | Use distance to k-nearest neighbors in feature space               | Simple but computationally heavy at scale                           |
+
+
+
 ### Access the Google Compute Engine VM via SSH (No GPU)
 - At https://console.cloud.google.com/compute/metadata , do "Edit" then add your SSH key. Then "Save"
 - Under "VM instances", see the "External IP address"
