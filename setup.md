@@ -1,20 +1,14 @@
 For our first milestone, we will focus on 
 
-[] applying OpenOOD methods to the CUB-200-2011 [1] dataset,
-focusing on the [] post hoc and [] data augmentation meth-
-ods, as these performed best. Nature photography
-datasets such as CUB-200-2011 often exhibit back-
-ground noise, where training samples contain extrane-
-ous objects alongside the target class, and bounding-
-box annotations contain pixels that are not part of the
-object. Therefore, a primary challenge for our project
-will be [] minimizing performance degradation caused by
-the model learning spurious background features, rather
-than features of the annotated object. One way to mit-
-igate the impact of background noise would be to [] cap-
-ture background representations and take them into ac-
-count when computing class scores, perhaps via cluster-
-ing methods.
+Objective: Illustrate the hypothesis that "OpenOOD is harder on fine-grained dataset (CUB) when compared to course-grained dataset (CIFAR)".
+Approach: Run inference on CUB using local compute or Colab. Focus on post-hoc methods Compare to CIFAR results reported in the paper. 
+
+Problem: CUDA baked in to OpenOOD, CPU not supported, so cannot use a Google Compute Engine or AWS EC2 VM for a shared dev environment without paying for a GPU which is really hard to register anyway. 
+Approach: OK just stick to local dev environments and hopefully no issues
+
+But background features only become an issue in Object Detection (for our study, Open Set Object Detection). So this hypothesis doesn't make sense until we advance beyond OpenOOD to the [fine-grained OSR paper](https://langnico.github.io/fine-grained-osr/)?
+
+Unless we claim that background features  to OOD detection *by* making the model be less distracted by the backgrounds, and then return "I'm not sure about this sample, it does not resemble any of my training data", but then we would need a network to generate region proposals to then perform masking.
 
 # Post Hoc OOD Detection Methods
 
@@ -33,50 +27,6 @@ ing methods.
 | **VIM**         | Feature decomposition     | Use principal components and residual norm to score OOD-ness       | Robust to OOD samples deviating from class subspaces                |
 | **KNN**         | Distance-based            | Use distance to k-nearest neighbors in feature space               | Simple but computationally heavy at scale                           |
 
-
-
-### Access the Google Compute Engine VM via SSH (No GPU)
-- At https://console.cloud.google.com/compute/metadata , do "Edit" then add your SSH key. Then "Save"
-- Under "VM instances", see the "External IP address"
-- then you can login to it using the ssh client of your choice. `ssh -i PATH_TO_PRIVATE_KEY USERNAME@EXTERNAL_IP`
-
-I created the directory /682-proj with open permissions so we can access the data without duplicating it. Also we can each create a personal directory here:
-
-```
-(venv) _mexus@instance-20250406-002240:/682-proj/michael/libMR$ ls -la /682-proj/
-total 16
-drwxrwxrwx  4 root    root    4096 Apr  6 01:00 .
-drwxr-xr-x 21 root    root    4096 Apr  6 00:47 ..
-drwxrwxrwx  4 mwroffo mwroffo 4096 Apr  6 02:27 michael
-drwxrwxrwx  4 root    root    4096 Apr  6 01:40 shared
-```
-
-The ubuntu VM has python 3.10. It does not have GPU but could be allocated on a new VM if necessary.
-
-Install steps as follows
-
-```
-python3 -m pip install -e .  # install openood
-python3 -m pip install cython numpy libmr
-
-## if pip install fails, try cloning libmr and doing 
-
-pip install .
-
-## But you shouldn't need that.
-
-## Support ipynb
-python3 -m pip install ipykernel
-```
-
-Remember to run ssh-keygen on the VM and copy the public key to your github.
-
-Just for the record, I did have to do some sysadminish steps to include necessary build tools:
-```
-## build tools for installing libmr
-sudo apt install -y build-essential python3.10-dev
-sudo apt install -y libgl1 unzip
-```
 
 ### Verify python version
 ```
