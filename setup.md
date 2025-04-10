@@ -1,4 +1,3 @@
-For our first milestone, we will focus on 
 
 Objective: Illustrate the hypothesis that "OpenOOD is harder on fine-grained dataset (CUB) when compared to course-grained dataset (CIFAR)".
 Approach: Run inference on CUB using local compute or Colab. Focus on post-hoc methods Compare to CIFAR results reported in the paper. 
@@ -10,7 +9,36 @@ But background features only become an issue in Object Detection (for our study,
 
 Unless we claim that background features  to OOD detection *by* making the model be less distracted by the backgrounds, and then return "I'm not sure about this sample, it does not resemble any of my training data", but then we would need a network to generate region proposals to then perform masking.
 
-# Post Hoc OOD Detection Methods
+## TODOs
+[] (Calvin) Set up CUB dataset via OpenOOD yaml config 
+[x] (Michael) Get easy-dev.py running
+[ ] ( Unassigned ) Run CUB dataset using easy-dev methods
+
+
+## Understanding postprocessor config
+```
+postprocessor:
+  name: knn
+  APS_mode: True  # Whether to use automatic hyperparameter search
+  postprocessor_args:
+    K: 50
+  postprocessor_sweep:
+    K_list: [50, 100, 200, 500, 1000]
+```
+
+### 📊 OOD Detection Metrics
+
+| Metric       | Description                                                              | Higher is Better? | Measures ID or OOD?   |
+|--------------|--------------------------------------------------------------------------|-------------------|-----------------------|
+| **CCR**      | Correct Classification Rate — accuracy on correctly predicted ID samples | ✅ Yes             | ID                    |
+| **FPR**      | False Positive Rate — % of OOD samples incorrectly classified as ID      | ❌ No              | OOD                   |
+| **AUROC**    | Area Under the ROC Curve — measures separability of ID vs. OOD           | ✅ Yes             | Both (discriminative) |
+| **AUPR_IN**  | Area Under Precision-Recall Curve (ID as positive class)                 | ✅ Yes             | ID                    |
+| **AUPR_OUT** | Area Under Precision-Recall Curve (OOD as positive class)                | ✅ Yes             | OOD                   |
+
+> 📌 **Tip**: CCR and FPR are often reported together to show the trade-off between correct classification and rejection.
+
+### Post Hoc OOD Detection Methods
 
 | Method          | Approach Type             | Key Idea                                                           | Notes                                                               |
 |-----------------|---------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------|
