@@ -27,7 +27,7 @@ evaluator:
 
 optimizer:
   name: sgd
-  num_epochs: 100
+  num_epochs: 5 #TODO:change me
   lr: 0.1
   momentum: 0.9
   weight_decay: 0.0005
