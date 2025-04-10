@@ -2,6 +2,9 @@ import random
 from pathlib import Path
 from collections import defaultdict
 
+# Assuming CUBs dataset has been downloaded and untar to ./data folder
+# See get_cubs.sh
+
 # Config
 seed = 42
 num_id_classes = 150
