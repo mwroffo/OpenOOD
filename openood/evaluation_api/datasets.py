@@ -82,6 +82,68 @@ DATA_INFO = {
             }
         }
     },
+    'cifar6_seed1': {
+        'num_classes': 6,
+        'id': {
+            'train': {
+                'data_dir': 'images_classic/',
+                'imglist_path': 'benchmark_imglist/osr_cifar6/train/train_cifar10_6_seed1.txt'
+            },
+            'val': {
+                'data_dir': 'images_classic/',
+                'imglist_path': 'benchmark_imglist/osr_cifar6/val/val_cifar10_6_seed1.txt'
+            },
+            'test': {
+                'data_dir': 'images_classic/',
+                'imglist_path': 'benchmark_imglist/osr_cifar6/test/test_cifar10_6_id_seed1.txt'
+            }
+        },
+        'osr': {
+            'val': {
+                'data_dir': 'images_classic/',
+                'imglist_path': 'benchmark_imglist/osr_cifar6/test/test_cifar10_6_id_seed1.txt'
+            },
+            'osr': {
+                'datasets': ['cifar4'],
+                'cifar4': {
+                    'data_dir': 'images_classic/',
+                    'imglist_path':
+                    'benchmark_imglist/osr_cifar6/test/test_cifar10_4_ood_seed1.txt'
+                }
+            }
+        }
+    },
+    #  'cub150_seed1': {
+    #     'num_classes': 150,
+    #     'id': {
+    #         'train': {
+    #             'data_dir': './',
+    #             'imglist_path': './data/benchmark_imglist/osr_cub150/train/train_cub200_150_seed1.txt'
+    #         },
+    #         'val': {
+    #             'data_dir': './',
+    #             'imglist_path': './data/benchmark_imglist/osr_cub150/val/val_cub200_150_seed1.txt'
+    #         },
+    #         'test': {
+    #             'data_dir': './',
+    #             'imglist_path': './data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1.txt'
+    #         }
+    #     },
+    #     'osr': {
+    #         'val': {
+    #             'data_dir': './',
+    #             'imglist_path': './data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1.txt'
+    #         },
+    #         'osr': {
+    #             'datasets': ['cifar4'],
+    #             'cifar4': {
+    #                 'data_dir': './',
+    #                 'imglist_path':
+    #                 './data/benchmark_imglist/osr_cub150/test/test_cub200_50_ood_seed1.txt'
+    #             }
+    #         }
+    #     }
+    # },
     'cifar100': {
         'num_classes': 100,
         'id': {
