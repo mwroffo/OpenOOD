@@ -18,4 +18,4 @@ ood_dataset:
     datasets: [cub50]
     cub50:
       data_dir: ./
-      imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_150_ood_seed1.txt
+      imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_50_ood_seed1.txt

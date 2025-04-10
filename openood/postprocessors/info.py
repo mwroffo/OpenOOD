@@ -3,5 +3,6 @@ num_classes_dict = {
     'cifar100': 100,
     'imagenet200': 200,
     'imagenet': 1000,
-    'cifar6_seed1': 6
+    'cifar6_seed1': 6,
+    'cub150_seed1': 150
 }
