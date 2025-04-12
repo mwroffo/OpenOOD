@@ -25,7 +25,7 @@ class ReactPostprocessor(BasePostprocessor):
                                   desc='Setup: ',
                                   position=0,
                                   leave=True):
-                    data = batch['data'].cuda()
+                    data = batch['data'].to(self.device)
                     data = data.float()
 
                     _, feature = net(data, return_feature=True)

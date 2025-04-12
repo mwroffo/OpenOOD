@@ -12,6 +12,14 @@ class BasePostprocessor:
     def __init__(self, config):
         self.config = config
 
+        # Determine best available device (prefers CUDA > MPS > CPU)
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
+
     def setup(self, net: nn.Module, id_loader_dict, ood_loader_dict):
         pass
 
@@ -29,8 +37,8 @@ class BasePostprocessor:
         pred_list, conf_list, label_list = [], [], []
         for batch in tqdm(data_loader,
                           disable=not progress or not comm.is_main_process()):
-            data = batch['data'].cuda()
-            label = batch['label'].cuda()
+            data = batch['data'].to(self.device)
+            label = batch['label'].to(self.device)
             pred, conf = self.postprocess(net, data)
 
             pred_list.append(pred.cpu())
