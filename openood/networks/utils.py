@@ -8,6 +8,7 @@ import torch.nn as nn
 
 import openood.utils.comm as comm
 
+# === Import network implementations ===
 from .bit import KNOWN_MODELS
 from .conf_branch_net import ConfBranchNet
 from .csi_net import get_csi_linear_layers, CSINet
@@ -41,8 +42,15 @@ from .ascood_net import ASCOODNet
 
 
 def get_network(network_config):
-
     num_classes = network_config.num_classes
+
+    # Determine best available device once
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+    else:
+        device = torch.device('cpu')
 
     if network_config.name == 'resnet18_32x32':
         net = ResNet18_32x32(num_classes=num_classes)
@@ -368,25 +376,23 @@ def get_network(network_config):
     else:
         raise Exception('Unexpected Network Architecture!')
 
+    # ==============================
+    # Load pretrained weights if available
+    # ==============================
     if network_config.pretrained:
         if type(net) is dict:
             if isinstance(network_config.checkpoint, list):
-                for subnet, checkpoint in zip(net.values(),
-                                              network_config.checkpoint):
-                    if checkpoint is not None:
-                        if checkpoint != 'none':
-                            subnet.load_state_dict(torch.load(checkpoint),
-                                                   strict=False)
+                for subnet, checkpoint in zip(net.values(), network_config.checkpoint):
+                    if checkpoint is not None and checkpoint != 'none':
+                        subnet.load_state_dict(torch.load(checkpoint), strict=False)
             elif isinstance(network_config.checkpoint, str):
                 ckpt = torch.load(network_config.checkpoint)
                 subnet_ckpts = {k: {} for k in net.keys()}
                 for k, v in ckpt.items():
                     for subnet_name in net.keys():
-                        if k.startwith(subnet_name):
-                            subnet_ckpts[subnet_name][k.replace(
-                                subnet_name + '.', '')] = v
+                        if k.startswith(subnet_name):
+                            subnet_ckpts[subnet_name][k.replace(subnet_name + '.', '')] = v
                             break
-
                 for subnet_name, subnet in net.items():
                     subnet.load_state_dict(subnet_ckpts[subnet_name])
 
@@ -396,35 +402,46 @@ def get_network(network_config):
             pass
         else:
             try:
-                net.load_state_dict(torch.load(network_config.checkpoint),
-                                    strict=False)
+                net.load_state_dict(torch.load(network_config.checkpoint), strict=False)
             except RuntimeError:
-                # sometimes fc should not be loaded
-                loaded_pth = torch.load(network_config.checkpoint)
-                loaded_pth.pop('fc.weight')
-                loaded_pth.pop('fc.bias')
+                # Fallback: skip loading final layer if incompatible
+                loaded_pth = torch.load(network_config.checkpoint, map_location='cpu')
+                loaded_pth.pop('fc.weight', None)
+                loaded_pth.pop('fc.bias', None)
                 net.load_state_dict(loaded_pth, strict=False)
-        print('Model Loading {} Completed!'.format(network_config.name))
+        print(f'Model Loading {network_config.name} Completed!')
 
+    # ==============================
+    # Move model to appropriate device
+    # ==============================
     if network_config.num_gpus > 1:
-        if type(net) is dict:
-            for key, subnet in zip(net.keys(), net.values()):
+        if isinstance(net, dict):
+            for key in net:
                 net[key] = torch.nn.parallel.DistributedDataParallel(
-                    subnet.cuda(),
+                    net[key].to(device),
                     device_ids=[comm.get_local_rank()],
                     broadcast_buffers=True)
         else:
             net = torch.nn.parallel.DistributedDataParallel(
-                net.cuda(),
+                net.to(device),
                 device_ids=[comm.get_local_rank()],
                 broadcast_buffers=True)
 
-    if network_config.num_gpus > 0:
-        if type(net) is dict:
+    elif network_config.num_gpus > 0:
+        if isinstance(net, dict):
             for subnet in net.values():
-                subnet.cuda()
+                subnet.to(device)
         else:
-            net.cuda()
+            net.to(device)
 
+    else:  # Handle num_gpus == 0 explicitly
+        if isinstance(net, dict):
+            for subnet in net.values():
+                subnet.to(device)
+        else:
+            net.to(device)
+
+    # Enable cuDNN benchmarking for optimized backend selection
     cudnn.benchmark = True
+
     return net
