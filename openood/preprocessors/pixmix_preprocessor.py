@@ -19,6 +19,7 @@ resize_list = {
     'imagenet200': 256,
     'aircraft': 512,
     'cub': 512,
+    'cub150': 224
 }  # set mnist bymyself, imagenet was set to 224 by author, but 256 here
 
 
