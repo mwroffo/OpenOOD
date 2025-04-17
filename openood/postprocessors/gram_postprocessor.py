@@ -14,6 +14,7 @@ from .info import num_classes_dict
 
 class GRAMPostprocessor(BasePostprocessor):
     def __init__(self, config):
+        super().__init__(config)
         self.config = config
         self.postprocessor_args = config.postprocessor.postprocessor_args
         self.num_classes = num_classes_dict[self.config.dataset.name]
