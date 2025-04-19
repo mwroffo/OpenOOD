@@ -5,7 +5,7 @@ network='resnet18_224x224'
 
 # These checkpoints are saved in our shared google drive
 # Trained for 100 epochs 
-path='results/cub150_seed1_resnet18_224x224_base_e100_lr0.1_default/s0/best_epoch97_acc0.6444.ckpt'
+path='results/cub150_seed1_resnet18_224x224_base_e100_lr0.1_default/s0/best_epoch96_acc0.6831.ckpt'
 # 50 epochs
 # path='results/cub150_seed1_resnet18_224x224_base_e50_lr0.1_default/s0/best_epoch49_acc0.6115.ckpt'
 
