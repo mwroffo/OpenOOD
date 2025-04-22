@@ -23,7 +23,7 @@ class OpenMax(BasePostprocessor):
             # Fit the weibull distribution from training data.
             print('Fittting Weibull distribution...')
             _, mavs, dists = compute_train_score_and_mavs_and_dists(
-                self.nc, id_loader_dict['train'], device='cuda', net=net)
+                self.nc, id_loader_dict['train'], device=self.device, net=net)
             categories = list(range(0, self.nc))
             self.weibull_model = fit_weibull(mavs, dists, categories,
                                              self.weibull_tail, 'euclidean')
@@ -94,8 +94,8 @@ def compute_train_score_and_mavs_and_dists(train_class_num, trainloader,
                                position=0,
                                leave=True):
             batch = next(train_dataiter)
-            data = batch['data'].cuda()
-            target = batch['label'].cuda()
+            data = batch['data'].to(device)
+            target = batch['label'].to(device)
 
             # this must cause error for cifar
             outputs = net(data)

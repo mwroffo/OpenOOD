@@ -169,6 +169,14 @@ class Evaluator:
         # how to ensure the postprocessors can work with
         # models whose definition doesn't align with OpenOOD
 
+        # Determine best available device (prefers CUDA > MPS > CPU)
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
+
     def _classifier_inference(self,
                               data_loader: DataLoader,
                               msg: str = 'Acc Eval',
@@ -179,7 +187,7 @@ class Evaluator:
         all_labels = []
         with torch.no_grad():
             for batch in tqdm(data_loader, desc=msg, disable=not progress):
-                data = batch['data'].cuda()
+                data = batch['data'].to(self.device)
                 logits = self.net(data)
                 preds = logits.argmax(1)
                 all_preds.append(preds.cpu())
