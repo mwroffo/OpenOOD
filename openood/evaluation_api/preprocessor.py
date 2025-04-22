@@ -31,7 +31,12 @@ default_preprocessing_dict = {
         'img_size': 448,
         'normalization': [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
     },
-    'cub': {
+    'cub150_seed1': {
+        'pre_size': 512,
+        'img_size': 448,
+        'normalization': [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
+    },
+    'osr_cub': {
         'pre_size': 512,
         'img_size': 448,
         'normalization': [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],

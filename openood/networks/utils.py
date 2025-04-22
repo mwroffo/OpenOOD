@@ -16,6 +16,7 @@ from .cider_net import CIDERNet
 from .t2fnorm_net import T2FNormNet
 from .de_resnet18_256x256 import AttnBasicBlock, BN_layer, De_ResNet18_256x256
 from .densenet import DenseNet3
+from .dinov2 import DINOv2Wrapper
 from .draem_net import DiscriminativeSubNetwork, ReconstructiveSubNetwork
 from .dropout_net import DropoutNet
 from .dsvdd_net import build_network
@@ -325,6 +326,10 @@ def get_network(network_config):
 
     elif network_config.name == 'vit-b-16':
         net = ViT_B_16(num_classes=num_classes)
+
+    elif network_config.name == 'dinov2':
+        backbone = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14_reg')
+        net = DINOv2Wrapper(backbone)
 
     elif network_config.name == 'conf_branch_net':
         # don't wrap ddp here cuz we need to modify

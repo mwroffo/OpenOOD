@@ -113,37 +113,51 @@ DATA_INFO = {
             }
         }
     },
-    #  'cub150_seed1': {
-    #     'num_classes': 150,
-    #     'id': {
-    #         'train': {
-    #             'data_dir': './',
-    #             'imglist_path': './data/benchmark_imglist/osr_cub150/train/train_cub200_150_seed1.txt'
-    #         },
-    #         'val': {
-    #             'data_dir': './',
-    #             'imglist_path': './data/benchmark_imglist/osr_cub150/val/val_cub200_150_seed1.txt'
-    #         },
-    #         'test': {
-    #             'data_dir': './',
-    #             'imglist_path': './data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1.txt'
-    #         }
-    #     },
-    #     'osr': {
-    #         'val': {
-    #             'data_dir': './',
-    #             'imglist_path': './data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1.txt'
-    #         },
-    #         'osr': {
-    #             'datasets': ['cifar4'],
-    #             'cifar4': {
-    #                 'data_dir': './',
-    #                 'imglist_path':
-    #                 './data/benchmark_imglist/osr_cub150/test/test_cub200_50_ood_seed1.txt'
-    #             }
-    #         }
-    #     }
-    # },
+    'osr_cub': {
+        'num_classes': 150,
+        'id': {
+            'train': {
+                'data_dir': '.',
+                'imglist_path': './benchmark_imglist/osr_cub/train/train_cub200_150_seed1.txt'
+            },
+            'val': {
+                'data_dir': '.',
+                'imglist_path': './benchmark_imglist/osr_cub/val/val_cub200_150_seed1.txt'
+            },
+            'test': {
+                'data_dir': '.',
+                'imglist_path': './benchmark_imglist/osr_cub/test/test_cub200_150_id_seed1.txt'
+            }
+        },
+        'osr': {
+            'val': {
+                'data_dir': '.',
+                'imglist_path': './benchmark_imglist/osr_cub/test/test_cub200_150_id_seed1.txt'
+            },
+            'osr': {
+                'datasets': ['cub50_seed1'],
+                'cub50_seed1': {
+                    'data_dir': '.',
+                    'imglist_path':
+                    './benchmark_imglist/osr_cub/test/test_cub200_50_ood_seed1.txt'
+                }
+            }
+        },
+        'csid': {
+            'datasets': [],
+        },
+        'ood': {
+            'val': {
+                
+            },
+            'near': {
+                
+            },
+            'far': {
+                
+            },
+        }
+    },
     'cifar100': {
         'num_classes': 100,
         'id': {
@@ -428,6 +442,7 @@ benchmarks_dict = {
         'imagenet_1k', 'ssb_hard', 'ninco', 'inaturalist', 'texture',
         'openimage_o', 'imagenet_v2', 'imagenet_c', 'imagenet_r', 'imagenet_es'
     ],
+    'osr_cub': []
 }
 
 
@@ -477,8 +492,11 @@ def data_setup(data_root, id_data_name):
             zip_file.extractall(data_root)
         os.remove(file_path)
 
-    for dataset in benchmarks_dict[id_data_name]:
-        download_dataset(dataset, data_root)
+    try:
+        for dataset in benchmarks_dict[id_data_name]:
+            download_dataset(dataset, data_root)
+    except KeyError:
+        print(f"WARNING: No such dataset exists for '{id_data_name}'. Skipping...")
 
 
 def get_id_ood_dataloader(id_name, data_root, preprocessor, **loader_kwargs):
@@ -514,70 +532,73 @@ def get_id_ood_dataloader(id_name, data_root, preprocessor, **loader_kwargs):
 
     # id
     sub_dataloader_dict = {}
-    for split in data_info['id'].keys():
-        dataset = ImglistDataset(
-            name='_'.join((id_name, split)),
-            imglist_pth=os.path.join(data_root,
-                                     data_info['id'][split]['imglist_path']),
-            data_dir=os.path.join(data_root,
-                                  data_info['id'][split]['data_dir']),
-            num_classes=data_info['num_classes'],
-            preprocessor=preprocessor,
-            data_aux_preprocessor=test_standard_preprocessor)
-        dataloader = DataLoader(dataset, **loader_kwargs)
-        sub_dataloader_dict[split] = dataloader
-    dataloader_dict['id'] = sub_dataloader_dict
-
-    # csid
-    sub_dataloader_dict = {}
-    for dataset_name in data_info['csid']['datasets']:
-        dataset = ImglistDataset(
-            name='_'.join((id_name, 'csid', dataset_name)),
-            imglist_pth=os.path.join(
-                data_root, data_info['csid'][dataset_name]['imglist_path']),
-            data_dir=os.path.join(data_root,
-                                  data_info['csid'][dataset_name]['data_dir']),
-            num_classes=data_info['num_classes'],
-            preprocessor=preprocessor
-            if dataset_name != 'imagenet_c' else imagenet_c_preprocessor,
-            data_aux_preprocessor=test_standard_preprocessor)
-        dataloader = DataLoader(dataset, **loader_kwargs)
-        sub_dataloader_dict[dataset_name] = dataloader
-    dataloader_dict['csid'] = sub_dataloader_dict
-
-    # ood
-    dataloader_dict['ood'] = {}
-    for split in data_info['ood'].keys():
-        split_config = data_info['ood'][split]
-
-        if split == 'val':
-            # validation set
+    for split in data_info.get('id', {}).keys():
+        try:
             dataset = ImglistDataset(
-                name='_'.join((id_name, 'ood', split)),
-                imglist_pth=os.path.join(data_root,
-                                         split_config['imglist_path']),
-                data_dir=os.path.join(data_root, split_config['data_dir']),
+                name='_'.join((id_name, split)),
+                imglist_pth=os.path.join(data_root, data_info['id'][split]['imglist_path']),
+                data_dir=os.path.join(data_root, data_info['id'][split]['data_dir']),
                 num_classes=data_info['num_classes'],
                 preprocessor=preprocessor,
                 data_aux_preprocessor=test_standard_preprocessor)
             dataloader = DataLoader(dataset, **loader_kwargs)
-            dataloader_dict['ood'][split] = dataloader
-        else:
-            # dataloaders for nearood, farood
-            sub_dataloader_dict = {}
-            for dataset_name in split_config['datasets']:
-                dataset_config = split_config[dataset_name]
+            sub_dataloader_dict[split] = dataloader
+        except KeyError as e:
+            print(f"Warning: missing key {e} for 'id' split '{split}', skipping.")
+    dataloader_dict['id'] = sub_dataloader_dict
+
+    # csid
+    sub_dataloader_dict = {}
+    for dataset_name in data_info.get('csid', {}).get('datasets', []):
+        try:
+            dataset = ImglistDataset(
+                name='_'.join((id_name, 'csid', dataset_name)),
+                imglist_pth=os.path.join(data_root, data_info['id'][split]['imglist_path']),
+                data_dir=os.path.join(data_root, data_info['id'][split]['data_dir']),
+                num_classes=data_info['num_classes'],
+                preprocessor=preprocessor if dataset_name != 'imagenet_c' else imagenet_c_preprocessor,
+                data_aux_preprocessor=test_standard_preprocessor)
+            dataloader = DataLoader(dataset, **loader_kwargs)
+            sub_dataloader_dict[dataset_name] = dataloader
+        except KeyError as e:
+            print(f"Warning: missing key {e} for 'csid' dataset '{dataset_name}', skipping.")
+    dataloader_dict['csid'] = sub_dataloader_dict
+
+    # ood
+    dataloader_dict['ood'] = {}
+    for split in data_info.get('ood', {}).keys():
+        split_config = data_info['ood'][split]
+        if split == 'val':
+            try:
                 dataset = ImglistDataset(
-                    name='_'.join((id_name, 'ood', dataset_name)),
-                    imglist_pth=os.path.join(data_root,
-                                             dataset_config['imglist_path']),
-                    data_dir=os.path.join(data_root,
-                                          dataset_config['data_dir']),
+                    name='_'.join((id_name, 'ood', split)),
+                    imglist_pth=os.path.join(data_root, split_config['imglist_path']),
+                    data_dir=os.path.join(data_root, split_config['data_dir']),
                     num_classes=data_info['num_classes'],
                     preprocessor=preprocessor,
                     data_aux_preprocessor=test_standard_preprocessor)
                 dataloader = DataLoader(dataset, **loader_kwargs)
-                sub_dataloader_dict[dataset_name] = dataloader
+                dataloader_dict['ood'][split] = dataloader
+            except KeyError as e:
+                print(f"Warning: missing key {e} for 'ood' validation split, skipping.")
+        else:
+            sub_dataloader_dict = {}
+            for dataset_name in split_config.get('datasets', []):
+                try:
+                    dataset_config = split_config[dataset_name]
+                    imglist_pth = os.path.join(data_root, dataset_config['imglist_path'])
+                    data_dir = os.path.join(data_root, dataset_config['data_dir'])
+                    dataset = ImglistDataset(
+                        name='_'.join((id_name, 'ood', dataset_name)),
+                        imglist_pth=imglist_pth,
+                        data_dir=data_dir,
+                        num_classes=data_info['num_classes'],
+                        preprocessor=preprocessor,
+                        data_aux_preprocessor=test_standard_preprocessor)
+                    dataloader = DataLoader(dataset, **loader_kwargs)
+                    sub_dataloader_dict[dataset_name] = dataloader
+                except KeyError as e:
+                    print(f"Warning: missing key {e} for 'ood' dataset '{dataset_name}' in split '{split}', skipping.")
             dataloader_dict['ood'][split] = sub_dataloader_dict
-
+        
     return dataloader_dict
