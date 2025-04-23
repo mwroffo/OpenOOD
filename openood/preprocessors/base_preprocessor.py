@@ -29,9 +29,9 @@ class BasePreprocessor():
             ])
         elif 'aircraft' in config.dataset.name or 'cub' in config.dataset.name:
             self.transform = tvs_trans.Compose([
-                tvs_trans.Resize(self.pre_size,
-                                 interpolation=self.interpolation),
-                tvs_trans.RandomCrop(self.image_size),
+                tvs_trans.Resize(400,interpolation=self.interpolation), # Had to change these to match the expected size of the model
+                tvs_trans.CenterCrop(384),
+                # tvs_trans.RandomCrop(self.image_size),
                 tvs_trans.RandomHorizontalFlip(),
                 tvs_trans.ColorJitter(brightness=32. / 255., saturation=0.5),
                 tvs_trans.ToTensor(),

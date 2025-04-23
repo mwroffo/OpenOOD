@@ -17,17 +17,17 @@ dataset:
     dataset_class: ImglistDataset
     data_dir: ./ # Assuming the downloaded CUBS dataset is in ./data
     imglist_pth: ./data/benchmark_imglist/osr_cub150/train/train_cub200_150_seed1.txt
-    batch_size: 16
+    batch_size: 32
     shuffle: True
   val:
     dataset_class: ImglistDataset
     data_dir: ./
     imglist_pth: ./data/benchmark_imglist/osr_cub150/val/val_cub200_150_seed1.txt
-    batch_size: 16
+    batch_size: 32
     shuffle: False
   test:
     dataset_class: ImglistDataset
     data_dir: ./
     imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1.txt
-    batch_size: 16
+    batch_size: 32
     shuffle: False

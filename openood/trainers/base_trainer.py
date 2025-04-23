@@ -18,9 +18,16 @@ class BaseTrainer:
         self.net = net
         self.train_loader = train_loader
         self.config = config
+        
+        trainable_params = filter(lambda p: p.requires_grad, net.parameters())
+        
+        print("[DEBUG] Optimizer is training the following parameters:")
+        for name, param in self.net.named_parameters():
+            if param.requires_grad:
+                print(f"  - {name}: {param.shape}")
 
         self.optimizer = torch.optim.SGD(
-            net.parameters(),
+            trainable_params,
             config.optimizer.lr,
             momentum=config.optimizer.momentum,
             weight_decay=config.optimizer.weight_decay,
