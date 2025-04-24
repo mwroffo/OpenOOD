@@ -18,7 +18,7 @@ class ViTMahalanobisPostprocessor(BasePostprocessor):
         
         with torch.no_grad():
             for batch in tqdm(id_loader['train'],desc='Setup: ', position=0, leave=True):
-                images, labels = batch['data'].cuda(), batch['label']
+                images, labels = batch['data'].to(self.device), batch['label']
 
             with torch.no_grad():
                 # ViT CLS token

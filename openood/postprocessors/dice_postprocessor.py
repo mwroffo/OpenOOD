@@ -29,7 +29,7 @@ class DICEPostprocessor(BasePostprocessor):
                                   desc='Setup: ',
                                   position=0,
                                   leave=True):
-                    data = batch['data'].cuda()
+                    data = batch['data'].to(self.device)
                     data = data.float()
 
                     _, feature = net(data, return_feature=True)
@@ -44,17 +44,17 @@ class DICEPostprocessor(BasePostprocessor):
     def calculate_mask(self, w):
         contrib = self.mean_act[None, :] * w.data.squeeze().cpu().numpy()
         self.thresh = np.percentile(contrib, self.p)
-        mask = torch.Tensor((contrib > self.thresh)).cuda()
+        mask = torch.Tensor((contrib > self.thresh)).to(self.device)
         self.masked_w = w * mask
 
     @torch.no_grad()
     def postprocess(self, net: nn.Module, data: Any):
         fc_weight, fc_bias = net.get_fc()
         if self.masked_w is None:
-            self.calculate_mask(torch.from_numpy(fc_weight).cuda())
+            self.calculate_mask(torch.from_numpy(fc_weight).to(self.device))
         _, feature = net(data, return_feature=True)
         vote = feature[:, None, :] * self.masked_w
-        output = vote.sum(2) + torch.from_numpy(fc_bias).cuda()
+        output = vote.sum(2) + torch.from_numpy(fc_bias).to(self.device)
         _, pred = torch.max(torch.softmax(output, dim=1), dim=1)
         energyconf = torch.logsumexp(output.data.cpu(), dim=1)
         return pred, energyconf
