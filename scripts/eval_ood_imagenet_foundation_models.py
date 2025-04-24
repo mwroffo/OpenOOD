@@ -375,6 +375,7 @@ def main():
         preprocessor = net.preprocess
     elif args.model_type == 'dinov2':
         model_tag = args.arch.lower().replace('/', '').replace('-', '')
+        # TODO add this to utils.py?
         net = torch.hub.load('facebookresearch/dinov2', f'dinov2_{model_tag}')
 
         preprocessor = trn.Compose([
