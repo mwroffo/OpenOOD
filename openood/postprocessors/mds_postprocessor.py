@@ -29,7 +29,7 @@ class MDSPostprocessor(BasePostprocessor):
                                   desc='Setup: ',
                                   position=0,
                                   leave=True):
-                    data, labels = batch['data'].cuda(), batch['label']
+                    data, labels = batch['data'].to(self.device)(), batch['label']
                     logits, features = net(data, return_feature=True)
                     all_feats.append(features.cpu())
                     all_labels.append(deepcopy(labels))
