@@ -323,8 +323,11 @@ def get_network(network_config):
             zero_head=True,
             num_block_open=network_config.num_block_open)
 
-    elif network_config.name == 'vit-b-16':
-        net = ViT_B_16(num_classes=num_classes)
+    elif network_config.name == 'vit-b-16_eval':
+        net = ViT_B_16('eval', num_classes=num_classes)
+
+    elif network_config.name == 'vit-b-16_train':
+        net = ViT_B_16('train', num_classes=num_classes)
 
     elif network_config.name == 'conf_branch_net':
         # don't wrap ddp here cuz we need to modify

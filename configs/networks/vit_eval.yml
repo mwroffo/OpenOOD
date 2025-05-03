@@ -1,5 +1,5 @@
 network:
-  name: vit-b-16
+  name: vit-b-16_eval
   model: openood/networks/vit-base-p16-384.py
   num_classes: '@{dataset.num_classes}'
   image_size: '@{dataset.image_size}'
