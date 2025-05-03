@@ -18,6 +18,14 @@ class BaseTrainer:
         self.net = net
         self.train_loader = train_loader
         self.config = config
+
+        # Determine best available device (prefers CUDA > MPS > CPU)
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
         
         trainable_params = filter(lambda p: p.requires_grad, net.parameters())
         
@@ -57,8 +65,8 @@ class BaseTrainer:
                                leave=True,
                                disable=not comm.is_main_process()):
             batch = next(train_dataiter)
-            data = batch['data'].cuda()
-            target = batch['label'].cuda()
+            data = batch['data'].to(self.device)
+            target = batch['label'].to(self.device)
 
             # forward
             logits_classifier = self.net(data)
