@@ -1,11 +1,12 @@
-import torch
-import numpy as np
-import cv2
-import matplotlib.pyplot as plt
 from PIL import Image
-from segment_anything import sam_model_registry, SamPredictor
-from pathlib import Path
 
+'''
+- Reads `images.txt` and `bounding_boxes.txt` to map each image to its bounding box.
+- Crops each image using its bounding box with optional padding.
+- Saves cropped images in a parallel directory (`data/CUB_200_2011_crop/images/`), maintaining 
+  the same class-based folder structure.
+- Skips any images without bounding box annotations.
+'''
 import os
 
 def main():
@@ -78,30 +79,6 @@ def crop_with_bbox(image: Image.Image, bbox: list, padding=0.1) -> Image.Image:
     y2 = min(int(y + height + padding * height), image.height)
     return image.crop((x1, y1, x2, y2))
 
-
-def blur(predictor, image):
-    image_np = np.array(image.convert("RGB"))
-    h, w, _ = image_np.shape
-
-    # Run SAM to get mask
-    predictor.set_image(image_np)
-    input_point = np.array([[w // 2, h // 2]])  # center click
-    input_label = np.array([1])
-    masks, _, _ = predictor.predict(
-        point_coords=input_point,
-        point_labels=input_label,
-        multimask_output=True
-    )
-
-    mask = masks[0].astype(np.uint8)
-
-    # Blur entire image
-    blurred = cv2.GaussianBlur(image_np, (21, 21), 0)
-
-    # Composite: keep original foreground, use blurred background
-    result = np.where(mask[:, :, None], image_np, blurred)
-
-    return Image.fromarray(result)
     
 if __name__ == '__main__':
     main()

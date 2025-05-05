@@ -1,12 +1,21 @@
-import torch
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 from PIL import Image
 from segment_anything import sam_model_registry, SamPredictor
 from pathlib import Path
-
 import os
+
+'''
+This script generates a synthetic version of the CUB-200-2011 dataset by applying background masking 
+using the Segment Anything Model (SAM). It creates a copy of each image where the background has 
+been blacked out, preserving only the segmented foreground object (typically the bird).
+
+- Loads the SAM ViT-B model checkpoint for image segmentation.
+- For each image, uses a center-click prompt to predict the main object mask.
+- Applies the mask to remove the background and keeps only the foreground pixels.
+- Saves the resulting masked images in a parallel directory:
+  data/CUB_200_2011_masked/images/, maintaining the original class structure.
+'''
 
 def main():
     # Load SAM
@@ -22,9 +31,6 @@ def main():
     for class_dir in class_dirs:
         imgs = os.listdir(base_dir+class_dir)
         for img in imgs:
-            # img_path = base_dir+class_dir+ "/" + img
-            # image = np.array(Image.open(img_path))
-            # masked = mask_image(predictor, image)
             
             masked_image_dir =  masked_base_dir + class_dir + "/"
             masked_img_path = masked_image_dir + img

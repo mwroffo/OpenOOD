@@ -1,12 +1,27 @@
-import torch
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 from PIL import Image
 from segment_anything import sam_model_registry, SamPredictor
 from pathlib import Path
-
 import os
+
+'''
+This script preprocesses the CUB-200-2011 dataset by selectively blurring image backgrounds 
+while keeping the foreground bird sharp. It uses the Segment Anything Model (SAM) to segment 
+each image and applies Gaussian blur only to background regions, simulating a depth-of-field effect.
+
+Purpose:
+--------
+- Enhance fine-grained classification or OSR tasks by promoting subject prominence.
+- Suppress potentially misleading background cues to improve generalization.
+
+Key Features:
+-------------
+- Loads the SAM ViT-B model checkpoint.
+- For each image, generates a binary mask from a center-click prompt.
+- Applies a blur to the background while preserving the foreground bird.
+- Saves the modified images in `data/CUB_200_2011_blur/images/` with class-wise folders.
+'''
 
 def main():
     # Load SAM
