@@ -4,5 +4,7 @@ num_classes_dict = {
     'imagenet200': 200,
     'imagenet': 1000,
     'cifar6_seed1': 6,
-    'cub150_seed1': 150
+    'cub150_seed1': 150,
+    'cub150_seed1_sam': 150,
+    'cub150_seed1_blur': 150
 }

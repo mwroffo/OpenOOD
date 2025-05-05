@@ -1,0 +1,21 @@
+ood_dataset:
+  name: cub150_seed1_osr_sam
+  num_classes: 150
+
+  num_workers: '@{num_workers}'
+  num_gpus: '@{num_gpus}'
+  num_machines: '@{num_machines}'
+
+  dataset_class: ImglistDataset
+  batch_size: 32
+  shuffle: False
+
+  split_names: [val, osr]
+  val:
+    data_dir: ./ # Assuming the downloaded CUBS dataset is in ./data
+    imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1_sam.txt
+  osr:
+    datasets: [cub50]
+    cub50:
+      data_dir: ./
+      imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_50_ood_seed1_sam.txt
