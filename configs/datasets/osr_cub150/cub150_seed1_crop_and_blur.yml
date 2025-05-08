@@ -1,0 +1,33 @@
+dataset:
+  name: cub150_seed1_crop_and_blur
+  num_classes: 150
+  pre_size: 256
+  image_size: 224
+
+  interpolation: bilinear
+  normalization_type: imagenet #cifar10
+
+  num_workers: '@{num_workers}'
+  num_gpus: '@{num_gpus}'
+  num_machines: '@{num_machines}'
+
+  split_names: [train, val, test]
+
+  train:
+    dataset_class: ImglistDataset
+    data_dir: ./ # Assuming the downloaded CUBS dataset is in ./data
+    imglist_pth: ./data/benchmark_imglist/osr_cub150/train/train_cub200_150_seed1_crop_and_blur.txt
+    batch_size: 32
+    shuffle: True
+  val:
+    dataset_class: ImglistDataset
+    data_dir: ./
+    imglist_pth: ./data/benchmark_imglist/osr_cub150/val/val_cub200_150_seed1_crop_and_blur.txt
+    batch_size: 32
+    shuffle: False
+  test:
+    dataset_class: ImglistDataset
+    data_dir: ./
+    imglist_pth: ./data/benchmark_imglist/osr_cub150/test/test_cub200_150_id_seed1_crop_and_blur.txt
+    batch_size: 32
+    shuffle: False

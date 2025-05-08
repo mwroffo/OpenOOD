@@ -100,9 +100,10 @@ def compute_train_score_and_mavs_and_dists(train_class_num, trainloader,
             # this must cause error for cifar
             outputs = net(data)
             for score, t in zip(outputs, target):
-
-                if torch.argmax(score) == t:
-                    scores[t].append(score.unsqueeze(dim=0).unsqueeze(dim=0))
+                # Had to skip the if statement for dino to work
+                scores[t].append(score.unsqueeze(dim=0).unsqueeze(dim=0))
+                # if torch.argmax(score) == t:
+                    # scores[t].append(score.unsqueeze(dim=0).unsqueeze(dim=0))
 
     scores = [torch.cat(x).cpu().numpy() for x in scores]  # (N_c, 1, C) * C
     mavs = np.array([np.mean(x, axis=0) for x in scores])  # (C, 1, C)

@@ -6,5 +6,6 @@ num_classes_dict = {
     'cifar6_seed1': 6,
     'cub150_seed1': 150,
     'cub150_seed1_sam': 150,
-    'cub150_seed1_blur': 150
+    'cub150_seed1_blur': 150,
+    'cub150_seed1_crop_and_blur': 150
 }

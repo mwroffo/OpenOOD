@@ -1,6 +1,9 @@
 # ignore some temp/test files
 _test_*
 *-backup*
+*.pth
+*.tgz
+*.ckpt
 
 # ignore data and output directory
 data

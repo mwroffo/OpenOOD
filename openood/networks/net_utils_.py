@@ -31,11 +31,15 @@ from .resnet18_256x256 import ResNet18_256x256
 from .resnet50 import ResNet50
 from .udg_net import UDGNet
 from .wrn import WideResNet
+from .dino_vits import DINO_ViT_S_16
 
 
 def get_network(network_config):
 
     num_classes = network_config.num_classes
+
+    if network_config.name == 'dino_vits':
+        net = DINO_ViT_S_16(num_classes=num_classes)
 
     if network_config.name == 'resnet18_32x32':
         net = ResNet18_32x32(num_classes=num_classes)

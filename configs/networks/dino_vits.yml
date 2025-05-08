@@ -1,0 +1,12 @@
+network:
+  name: dino_vits
+  model: openood/networks/dino_vits.py
+  num_classes: '@{dataset.num_classes}'
+  image_size: '@{dataset.image_size}'
+  pretrained: False          # set 'True' to load pretrained model
+  checkpoint: ./results/checkpoints/dino_deitsmall16_pretrain_full_checkpoint.pth
+  num_gpus: '@{num_gpus}'
+dataset:
+  image_size: 384
+ood_dataset:
+  image_size: 384

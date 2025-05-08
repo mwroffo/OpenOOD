@@ -67,7 +67,7 @@ class GRAMPostprocessor(BasePostprocessor):
         for batch in tqdm(train_loader, desc='Compute min/max'):
             data = batch['data'].to(self.device)
             label = batch['label']
-            _, feature_list = model(data, return_feature_list=True)
+            _, feature_list = model(data, return_feature=True)
             label_list = self.tensor2list(label)
             for layer_idx in range(num_layer):
 

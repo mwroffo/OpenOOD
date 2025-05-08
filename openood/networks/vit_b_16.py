@@ -91,7 +91,7 @@ class ViT_B_16(VisionTransformer):
         # Confirm classifier head config
         print("Classifier head:", self.heads)
 
-    def forward(self, x, return_feature_list=False):
+    def forward(self, x, return_feature=False):
         # Reshape and permute the input tensor
         x = self._process_input(x)
         n = x.shape[0]
@@ -105,7 +105,7 @@ class ViT_B_16(VisionTransformer):
         # Classifier "token" as used by standard language architectures
         x = x[:, 0]
 
-        if return_feature_list:
+        if return_feature:
             # print("[DEBUG] CLS feat stats:", x.mean().item(), x.std().item())
             return self.heads(x), x
         else:

@@ -39,6 +39,7 @@ from .wrn import WideResNet
 from .rts_net import RTSNet
 from .palm_net import PALMNet
 from .ascood_net import ASCOODNet
+from .dino_vits import DINO_ViT_S_16
 
 
 def get_network(network_config):
@@ -328,6 +329,9 @@ def get_network(network_config):
 
     elif network_config.name == 'vit-b-16_train':
         net = ViT_B_16('train', num_classes=num_classes)
+        
+    elif network_config.name == 'dino_vits':
+        net = DINO_ViT_S_16(num_classes=num_classes)
 
     elif network_config.name == 'conf_branch_net':
         # don't wrap ddp here cuz we need to modify
@@ -387,6 +391,7 @@ def get_network(network_config):
             if isinstance(network_config.checkpoint, list):
                 for subnet, checkpoint in zip(net.values(), network_config.checkpoint):
                     if checkpoint is not None and checkpoint != 'none':
+                        print("Loading checkpoint", checkpoint)
                         subnet.load_state_dict(torch.load(checkpoint), strict=False)
             elif isinstance(network_config.checkpoint, str):
                 ckpt = torch.load(network_config.checkpoint)
@@ -405,6 +410,7 @@ def get_network(network_config):
             pass
         else:
             try:
+                print("Loaded state dict from", network_config.checkpoint)
                 net.load_state_dict(torch.load(network_config.checkpoint), strict=False)
             except RuntimeError:
                 # Fallback: skip loading final layer if incompatible

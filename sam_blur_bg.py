@@ -30,11 +30,16 @@ def main():
     predictor = SamPredictor(sam)
     
     # List all files and directories in the current working directory
-    base_dir = "data/CUB_200_2011/images/"
-    blurred_base_dir = "data/CUB_200_2011_blur/images/"
-    class_dirs = os.listdir("data/CUB_200_2011/images/")
+    # This iteration was focused on cropping the cropped images - change path accordingly if desired
+    base_dir = "data/CUB_200_2011_crop/images/"
+    blurred_base_dir = "data/CUB_200_2011_crop_and_blur/images/"
+    class_dirs = os.listdir("data/CUB_200_2011_crop/images/")
     
+    total = len(class_dirs)
+    i = -1
     for class_dir in class_dirs:
+        i+= 1
+        print(i, '/', total, 'Complete')
         imgs = os.listdir(base_dir+class_dir)
         for img in imgs:
             blurred_image_dir =  blurred_base_dir + class_dir + "/"
